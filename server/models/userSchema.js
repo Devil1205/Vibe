@@ -57,7 +57,7 @@ const User = new mongoose.Schema({
 });
 
 User.pre("save", async function (next) {
-    if (this.isModified === "password") {
+    if (this.isModified("password")) {
         this.password = await bcrypt.hash(this.password, 10);
     }
     next();
@@ -66,6 +66,11 @@ User.pre("save", async function (next) {
 User.methods.generateToken = function () {
     const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
     return token;
+}
+
+User.methods.matchPassword = async function (password) {
+    let matched = await bcrypt.compare(password, this.password);
+    return matched;
 }
 
 module.exports = mongoose.model('User', User);

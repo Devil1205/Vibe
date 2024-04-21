@@ -1,6 +1,6 @@
-const { registerUser, loginUser, updateProfile, getProfile, updatePassword } = require('../controllers/userController');
+const { registerUser, loginUser, updateProfile, getProfile, updatePassword, forgotPassword, resetPassword, logoutUser } = require('../controllers/userController');
 const { isAuthenticated } = require('../middlewares/auth');
-const { registerUserValidation, loginUserValidation, updateProfileValidation, updatePasswordValidation } = require('../middlewares/userValidation');
+const { registerUserValidation, loginUserValidation, updateProfileValidation, updatePasswordValidation, forgotPasswordValidation, resetPasswordValidation } = require('../middlewares/userValidation');
 
 const router = require('express').Router();
 
@@ -18,5 +18,14 @@ router.put("/profile", isAuthenticated, updateProfileValidation.errors, updatePr
 
 //update user password route
 router.put("/password", isAuthenticated, updatePasswordValidation.errors, updatePasswordValidation.validate, updatePassword);
+
+//forgot user password route
+router.post("/password/forgot", forgotPasswordValidation.errors, forgotPasswordValidation.validate, forgotPassword);
+
+//reset user password route
+router.post("/password/reset/:token", resetPasswordValidation.errors, resetPasswordValidation.validate, resetPassword);
+
+//logout user route
+router.get("/logout", isAuthenticated, logoutUser);
 
 module.exports = router;

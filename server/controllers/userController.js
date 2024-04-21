@@ -1,6 +1,7 @@
-const userSchema = require("../models/userSchema");
 const User = require("../models/userSchema");
+const { sendMail } = require("../utils/sendMail");
 const { storeToken } = require("../utils/storeJwtToken");
+const crypto = require('crypto');
 
 //register user controller
 exports.registerUser = async (req, res, next) => {
@@ -117,6 +118,102 @@ exports.updatePassword = async (req, res, next) => {
         });
     } catch (error) {
         console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+exports.forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email"
+            });
+        }
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email"
+            });
+        }
+
+        try {
+            const token = await user.generateResetToken();
+            // const resetPasswordUrl = `${req.protocol}://${req.get("host")}/password/reset/${token}`;
+            const resetPasswordUrl = `http://localhost:5000/api/v1/password/reset/${token}`;
+            const message = `Your password reset link is : \n\n ${resetPasswordUrl} \n\nImportant: This link is only valid for 15 minutes, do not share it with anyone otherwise your account security may be compromised.`;
+            const subject = "Vibe password reset";
+            await user.save();
+            sendMail(email, subject, message, res);
+            // return res.status(200).json({
+            //     success: true,
+            //     resetLink: resetPasswordUrl
+            // });
+        }
+        catch (error) {
+            user.resetToken = undefined;
+            user.resetTokenExpire = undefined;
+            await user.save();
+            return res.status(500).json({
+                success: false,
+                message: "Internal Server Error"
+            });
+        }
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+exports.resetPassword = async (req, res, next) => {
+    try {
+        const { token } = req.params;
+        const { password, confirmPassword } = req.body;
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Passwords do not match"
+            });
+        }
+
+        const resetToken = crypto.createHash("sha256").update(token).digest("hex");
+        const user = await User.findOne({ resetToken, resetTokenExpire: { $gt: Date.now() } });
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "The reset link is invalid or has been expired"
+            });
+        }
+
+        user.password = password;
+        user.resetToken = undefined;
+        user.resetTokenExpire = undefined;
+        await user.save();
+        storeToken(user, "Password reset successful", res);
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+//logout user controller
+exports.logoutUser = async (req, res, next) => {
+    try {
+        return res.status(200).cookie("token",undefined).json({
+            success: true,
+            message: "Logout successful"
+        })
+    } catch (error) {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

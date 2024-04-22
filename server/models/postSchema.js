@@ -4,15 +4,13 @@ const Post = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: "User"
     },
-    post: {
-        caption: String,
-        images: [
-            {
-                public_id: String,
-                url: String
-            }
-        ] 
-    },
+    caption: String,
+    images: [
+        {
+            public_id: String,
+            url: String
+        }
+    ],
     likes: [
         {
             type: mongoose.Schema.ObjectId,
@@ -29,9 +27,12 @@ const Post = new mongoose.Schema({
                 type: String,
                 required: [true, "Comment is required"]
             },
-            createdAt: Date
+            createdAt: Date,
+            editedAt: Date
         }
-    ]
+    ],
+    createdAt: Date,
+    editedAt: Date
 });
 
 module.exports = mongoose.model("Post", Post);

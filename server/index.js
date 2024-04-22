@@ -18,6 +18,7 @@ app.use(cookierParser());
 
 //routes
 app.use("/api/v1", require("./routes/userRoute"));
+app.use("/api/v1", require("./routes/postRoute"));
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);

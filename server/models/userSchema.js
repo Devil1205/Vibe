@@ -16,7 +16,8 @@ const User = new mongoose.Schema({
         type: Number,
         minLength: [10, "Invalid phone number"],
         maxLength: [10, "Invalid phone number"],
-        unique: true
+        unique: true,
+        sparse: true
     },
     password: {
         type: String,

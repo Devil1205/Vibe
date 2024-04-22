@@ -32,6 +32,7 @@ exports.registerUser = async (req, res, next) => {
         await user.save();
         storeToken(user, "Registration successful", res);
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

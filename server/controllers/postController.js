@@ -15,6 +15,9 @@ exports.createPost = async (req, res, next) => {
             post.images = images;
 
         await post.save();
+        const user = req.user;
+        user.posts.push(post._id);
+        await user.save();
 
         return res.status(200).json({
             success: true,
@@ -51,7 +54,7 @@ exports.getMyPosts = async (req, res, next) => {
 //get all posts controller
 exports.getAllPosts = async (req, res, next) => {
     try {
-        const posts = await Post.find()
+        const posts = await Post.find().populate([{path: "owner", select: "name image"}, {path: "likes", select: "name image"}, {path: "comments.user", select: "name image"}]);
 
         return res.status(200).json({
             success: true,
@@ -70,7 +73,7 @@ exports.getAllPosts = async (req, res, next) => {
 exports.getPostDetails = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const post = await Post.findOne({ owner: req.user._id, _id: id })
+        const post = await Post.findOne({ owner: req.user._id, _id: id }).populate([{path: "owner", select: "name image"}, {path: "likes", select: "name image"}, {path: "comments.user", select: "name image"}]);
 
         if (!post)
             return res.status(400).json({
@@ -249,7 +252,7 @@ exports.deleteComment = async (req, res, next) => {
             });
 
         const ind = post.comments.findIndex(elem => elem._id == commentid)
-        post.comments.splice(ind,1);
+        post.comments.splice(ind, 1);
         await post.save();
         return res.status(200).json({
             success: true,

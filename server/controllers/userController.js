@@ -70,9 +70,10 @@ exports.loginUser = async (req, res, next) => {
 //update user profile controller
 exports.getProfile = async (req, res, next) => {
 
+    const user = await User.findById(req.user.id).populate([{ path: "posts", select: "" }, { path: "followers", select: "image name" }, { path: "following", select: "image name" }]);
     return res.status(200).json({
         success: true,
-        user: req.user
+        user
     });
 }
 
@@ -108,7 +109,7 @@ exports.updatePassword = async (req, res, next) => {
     try {
         const { password } = req.body;
 
-        let user = req.user;
+        let user = await User.findById(req.user._id).select("+password");
 
         user.password = password;
         await user.save();
@@ -186,7 +187,7 @@ exports.resetPassword = async (req, res, next) => {
         }
 
         const resetToken = crypto.createHash("sha256").update(token).digest("hex");
-        const user = await User.findOne({ resetToken, resetTokenExpire: { $gt: Date.now() } });
+        const user = await User.findOne({ resetToken, resetTokenExpire: { $gt: Date.now() } }).select("+password");
         if (!user) {
             return res.status(400).json({
                 success: false,
@@ -210,10 +211,84 @@ exports.resetPassword = async (req, res, next) => {
 //logout user controller
 exports.logoutUser = async (req, res, next) => {
     try {
-        return res.status(200).cookie("token",undefined).json({
+        return res.status(200).cookie("token", undefined).json({
             success: true,
             message: "Logout successful"
         })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+//toggle follow user controller
+exports.toggleFollow = async (req, res, next) => {
+    try {
+        const { followId } = req.body;
+        if (followId == req.user._id) {
+            return res.status(400).json({
+                success: false,
+                message: "Cannot follow yourself"
+            });
+        }
+
+        const followedUser = await User.findById(followId);
+        if (!followedUser) {
+            return res.status(400).json({
+                success: false,
+                message: "User doesn't exist"
+            });
+        }
+        const user = req.user;
+        const ind = user.following.indexOf(followId);
+        if (ind !== -1) {
+            user.following.splice(ind, 1);
+            const i = followedUser.followers.indexOf(req.user._id);
+            followedUser.followers.splice(i, 1);
+        }
+        else {
+            user.following.push(followId);
+            followedUser.followers.push(req.user._id);
+        }
+
+        await user.save();
+        await followedUser.save();
+        return res.status(200).json({
+            success: true,
+            message: "Follow status changed"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+//get user details controller
+exports.getUserDetails = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        let user = await User.findById(id).populate([{ path: "posts", select: "" }, { path: "followers", select: "image name" }, { path: "following", select: "image name" }]);
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User doesn't exist"
+            });
+        }
+        const ind = req.user.following.indexOf(id);
+        if (ind === -1) {
+            user = await User.findById(id);
+            user.posts = [];
+        }
+
+        return res.status(200).json({
+            success: true,
+            user
+        });
     } catch (error) {
         return res.status(500).json({
             success: false,

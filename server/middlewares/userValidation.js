@@ -78,8 +78,10 @@ exports.updateProfileValidation = {
 
 exports.updatePasswordValidation = {
     errors: [
+        body("oldPassword")
+            .isLength({ min: 6 }).withMessage("Incorrect old password"),
         body("password")
-            .isLength({ min: 6 }).withMessage("Password must be atleast 6 characters"),
+            .isLength({ min: 6 }).withMessage("New password must be atleast 6 characters"),
     ],
 
     validate: (req, res, next) => {

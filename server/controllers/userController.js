@@ -107,10 +107,16 @@ exports.updateProfile = async (req, res, next) => {
 //update user profile controller
 exports.updatePassword = async (req, res, next) => {
     try {
-        const { password } = req.body;
+        const { oldPassword, password } = req.body;
 
         let user = await User.findById(req.user._id).select("+password");
 
+        if (! await user.matchPassword(oldPassword)) {
+            return res.status(400).json({
+                success: false,
+                message: "Incorrect password"
+            });
+        }
         user.password = password;
         await user.save();
 

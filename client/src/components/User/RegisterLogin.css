@@ -1,0 +1,164 @@
+.loginSignupContainer {
+    min-height: 100vh;
+    min-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font: 400 17px 'Roboto';
+    background: linear-gradient(45deg, #005e2e, #001708);
+    padding: 30px 0px;
+}
+
+.loginSignupBox {
+    background-color: white;
+    max-width: 350px;
+    max-height: 450px;
+    border-radius: 7px;
+    height: 90vh;
+    width: 90%;
+    min-height: 500px;
+    overflow: hidden;
+    position: relative;
+}
+
+.loginButton,
+.signupButton {
+    padding: 5px 10px;
+    width: 100%;
+    text-align: center;
+    font: 500 20px 'Roboto';
+    cursor: pointer;
+}
+
+.loginButton:hover,
+.signupButton:hover {
+    color: #24993c;
+}
+
+.loginSignupToggle {
+    display: flex;
+    padding: 10px;
+}
+
+.toggleBar {
+    width: 50%;
+    height: 3px;
+    background-color: #69ce7e;
+    transition: 0.9s cubic-bezier(1, -0.13, 0.58, 1) all;
+}
+
+.loginForm,
+.signupForm {
+    width: fit-content;
+    margin: 40px auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: 0.9s cubic-bezier(1, -0.13, 0.58, 1) all;
+    max-width: 253px;
+}
+
+.signupForm {
+    transform: translateX(100%);
+}
+
+.switchToRight {
+    transform: translateX(100%);
+}
+
+.switchToLeft {
+    transform: translateX(-50%);
+}
+
+.loginForm>div,
+.signupForm>div {
+    display: flex;
+    align-items: center;
+    margin: 25px 0px;
+}
+
+.loginForm>div {
+    margin: 40px 0px;
+}
+
+.loginForm>div>svg,
+.signupForm>div>svg {
+    position: absolute;
+    margin-left: 10px;
+}
+
+.loginForm>div>input,
+.signupForm>div>input {
+    padding: 10px 10px 10px 40px;
+    border: 1px solid rgb(106, 106, 106);
+    border-radius: 5px;
+}
+
+.forgotPassword {
+    font-size: 15px;
+    color: #0000FF;
+}
+
+.forgotPassword:hover {
+    color: #000097;
+    text-decoration: underline;
+}
+
+.loginSubmit,
+.signupSubmit {
+    width: 100%;
+    margin: 25px 0px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #24993c;
+    color: white;
+    border: none;
+    font-size: 17px;
+}
+
+.loginSubmit:hover,
+.signupSubmit:hover {
+    background-color: #1e7c31;
+}
+
+.registerImage>img,
+.registerImage>span {
+    width: 40px;
+    margin-right: 10px;
+    border-radius: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.registerImage>input {
+    padding: 0 !important;
+    font-size: 14px;
+    max-width: 202px;
+}
+
+.registerImage>input::file-selector-button {
+    padding: 5px 7px;
+    border-radius: 5px;
+    background-color: #0f9127;
+    color: white;
+    border: none;
+    font-size: 500 15px 'Roboto';
+    cursor: pointer;
+}
+
+.registerImage>input::file-selector-button:hover {
+    background-color: #1e7c31;
+}
+
+@media screen and (max-width: 500px) {
+    .loginSignupContainer {
+        background: white;
+        min-height: auto;
+    }
+
+    .loginSignupBox {
+        height: 100%;
+        width: 100%;
+    }
+}

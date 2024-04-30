@@ -37,12 +37,12 @@ function Header() {
     };
 
     return (
-        <div className='bg-green-900'>
+        <div className='bg-purple-950'>
             <AppBar position="static" color="transparent" className='p-2'>
                 <Container className='max-w-screen-2xl' style={{ maxWidth: "100%", paddingRight: "5px", paddingLeft: "0" }}>
                     <Toolbar disableGutters className='justify-between' sx={{ color: "white" }}>
                         <Link to="/" className='hidden sm:block'>
-                            <img src={logo} alt="" className='h-16 mr-3' />
+                            <img src={logo} alt="" className='h-16 mr-3 drop-shadow-[3px_4px_2px_black]' />
                         </Link>
 
                         <Box className="flex sm:hidden" >

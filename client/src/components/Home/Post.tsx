@@ -5,6 +5,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Link } from "react-router-dom";
+import { AiOutlineLike } from "react-icons/ai";
+import { BiSolidLike } from "react-icons/bi";
+import { FaRegComment } from "react-icons/fa";
 
 function Post() {
 
@@ -18,8 +21,8 @@ function Post() {
     };
 
     return (
-        <div className="postContainer bg-red-200 max-w-[900px] mx-auto p-4 space-y-4">
-            <div className="info flex justify-between">
+        <div className="postContainer max-w-[90%] mx-auto space-y-4 rounded">
+            <div className="postInfo flex justify-between">
                 <Link to="/user" className="flex items-center space-x-2">
                     <FaUserCircle className="text-3xl" />
                     <h3 className="text-lg font-[500]">Pulkit Sachdeva</h3>
@@ -56,7 +59,16 @@ function Post() {
                 </div>
             </div>
             <div className="content">
-                <img src="https://cdn.pixabay.com/photo/2016/05/05/02/37/sunset-1373171_1280.jpg" alt="" className="w-full h-full"/>
+                <img src="https://cdn.pixabay.com/photo/2016/05/05/02/37/sunset-1373171_1280.jpg" alt="" className="w-full h-full rounded" />
+                <div className="contentInfo flex space-x-4 font-bold mt-2">
+                    <Link to="/">0 Likes</Link>
+                    <Link to="/">0 Comments</Link>
+                </div>
+            </div>
+            <div className="actions flex text-2xl space-x-4">
+                <button><AiOutlineLike /></button>
+                {/* <button><BiSolidLike /></button> */}
+                <button><FaRegComment /></button>
             </div>
         </div>
     )

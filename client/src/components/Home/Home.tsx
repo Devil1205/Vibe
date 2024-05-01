@@ -1,10 +1,18 @@
 import { Link } from 'react-router-dom';
 import './Home.css';
 import Post from './Post.tsx';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
+
 
 function Home() {
+
+  useEffect(() => {
+    toast.success("This is toast");
+  }, [])
+
   return (
-    <div className='homeContainer block sm:grid grid-cols-[80%_20%] px-4 py-6'>
+    <div className='homeContainer block sm:grid grid-cols-[80%_20%] sm:px-4 py-6'>
       <div className='posts space-y-8'>
         <Post />
         <Post />

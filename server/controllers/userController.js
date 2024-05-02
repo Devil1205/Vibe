@@ -47,9 +47,9 @@ exports.loginUser = async (req, res, next) => {
 
         let user;
         if (email)
-            user = await User.findOne({ email });
+            user = await User.findOne({ email }).select("+password");
         else
-            user = await User.findOne({ phone });
+            user = await User.findOne({ phone }).select("+password");
 
         if (!user || !await user.matchPassword(password)) {
             return res.status(409).json({

@@ -12,11 +12,16 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../../../images/logo.png';
 import { Link, useLocation } from 'react-router-dom';
+import { useAppSelector } from '../../../hooks';
+import { FaUserCircle } from "react-icons/fa";
 
 const pages = ['Home', 'Following'];
 const settings = ['Profile', 'Account', 'Logout'];
 
 function Header() {
+
+    const { user, loading, error } = useAppSelector(state => state.userDetails);
+
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const location = useLocation().pathname;
@@ -95,9 +100,10 @@ function Header() {
                         </Box>
 
                         <Box sx={{ flexGrow: 0 }}>
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                            </IconButton>
+                            {Object.keys(user).length !== 0 ? <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                <Avatar alt="Remy Sharp" src={'image' in user ? user.image.url : ""} />
+                            </IconButton> :
+                                <Link to="/login" className='text-3xl'><FaUserCircle /></Link>}
                             <Menu
                                 sx={{ mt: '45px' }}
                                 id="menu-appbar"

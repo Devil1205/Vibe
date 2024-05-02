@@ -5,8 +5,8 @@
     justify-content: center;
     align-items: center;
     font: 400 17px 'Roboto';
-    background: linear-gradient(45deg, #005e2e, #001708);
     padding: 30px 0px;
+    background-color: rgb(28 15 49);
 }
 
 .loginSignupBox {
@@ -16,7 +16,7 @@
     border-radius: 7px;
     height: 90vh;
     width: 90%;
-    min-height: 500px;
+    min-height: 540px;
     overflow: hidden;
     position: relative;
 }

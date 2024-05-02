@@ -11,7 +11,7 @@ router.post("/post", isAuthenticated, createPostValidation.errors, createPostVal
 router.get("/posts/me", isAuthenticated, getMyPosts);
 
 //get all posts route
-router.get("/posts/all", isAuthenticated, getAllPosts);
+router.get("/posts/all", getAllPosts);
 
 //get post details route
 router.get("/post/:id", isAuthenticated, getPostDetails);

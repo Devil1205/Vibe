@@ -3,13 +3,22 @@ import './Home.css';
 import Post from './Post.tsx';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { getAllPosts } from '../../features/post/postsSlice.tsx';
+import { useAppDispatch, useAppSelector } from '../../hooks.ts';
 
 
 function Home() {
 
+  const dispatch = useAppDispatch();
+  const { posts, loading, error } = useAppSelector(state => state.posts);
+
   useEffect(() => {
-    toast.success("This is toast");
-  }, [])
+    if (error) {
+      toast.error(error);
+    }
+    else
+      dispatch(getAllPosts());
+  }, [dispatch, error])
 
   return (
     <div className='homeContainer block sm:grid grid-cols-[80%_20%] sm:px-4 py-6'>

@@ -33,6 +33,7 @@ const UserDetailsSlice = createSlice({
         })
         builder.addCase(fetchUser.rejected, (state, action) => {
             state.loading = false;
+            state.user = {};
             state.error = typeof action.payload === "string" ? action.payload : action.error.message;
         })
     }

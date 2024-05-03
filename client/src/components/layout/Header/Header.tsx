@@ -11,16 +11,23 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../../../images/logo.png';
-import { Link, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../hooks';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { FaUserCircle } from "react-icons/fa";
+import { clearErrors, clearSuccess, logoutUser } from '../../../features/user/userSlice';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { fetchUser } from '../../../features/user/userDetailsSlice';
 
 const pages = ['Home', 'Following'];
 const settings = ['Profile', 'Account', 'Logout'];
 
 function Header() {
 
-    const { user, loading, error } = useAppSelector(state => state.userDetails);
+    const { user, error: userError } = useAppSelector(state => state.userDetails);
+    const { message, loading, error } = useAppSelector(state => state.user);
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -40,6 +47,24 @@ function Header() {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+
+    const logout = () => {
+        dispatch(logoutUser());
+    }
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+            dispatch(clearErrors());
+        }
+        if (message) {
+            toast.success(message);
+            dispatch(clearSuccess());
+            dispatch(fetchUser());
+            navigate("/home");
+        }
+    }, [dispatch, error, message, user])
+
 
     return (
         <div className='bg-purple-950'>
@@ -101,7 +126,7 @@ function Header() {
 
                         <Box sx={{ flexGrow: 0 }}>
                             {Object.keys(user).length !== 0 ? <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src={'image' in user ? user.image.url : ""} />
+                                <Avatar alt={'name' in user ? user.name : ""} src={'image' in user ? user.image.url : "Invalid"} />
                             </IconButton> :
                                 <Link to="/login" className='text-3xl'><FaUserCircle /></Link>}
                             <Menu
@@ -120,8 +145,8 @@ function Header() {
                                 open={Boolean(anchorElUser)}
                                 onClose={handleCloseUserMenu}
                             >
-                                {settings.map((setting) => (
-                                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                {settings.map((setting, ind) => (
+                                    <MenuItem key={setting} onClick={() => { (ind === 2 && logout()); handleCloseUserMenu(); }}>
                                         <Typography textAlign="center">{setting}</Typography>
                                     </MenuItem>
                                 ))}

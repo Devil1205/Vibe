@@ -17,6 +17,13 @@ exports.registerUser = async (req, res, next) => {
             });
         }
 
+        if (phone && await User.findOne()) {
+            return res.status(409).json({
+                success: false,
+                message: "Phone number already in use"
+            });
+        }
+
         user = new User({
             name,
             email,
@@ -296,6 +303,45 @@ exports.getUserDetails = async (req, res, next) => {
             user
         });
     } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+//get user suggestions controller
+exports.getUserSuggestions = async (req, res, next) => {
+    try {
+        //number to people to suggest to follow
+        let n = 10;
+
+        //get current user's following list
+        const following = req.user.following;
+        //get current user's followers list
+        const followers = req.user.followers;
+        let users = await User.find();
+        let data = [];
+        //get following of current users followers and following
+        for (let i = 0; i < Math.max(followers.length, following.length); i++) {
+            //it finds the people whose followers list contain current user's following or follower user
+            data = users.filter(elem => elem.followers.includes(followers[i]) || elem.followers.includes(following[i]));
+        }
+
+        //find random users to recommend people in case the above list in less than n
+        let randomUsers = await User.aggregate([{ $sample: { size: n - data.length } }, { $project: { "password": 0 } }]);
+        //remove own account and duplicate accounts already present in data
+        randomUsers = randomUsers.filter(elem => elem._id.toString() !== req.user._id.toString() && !data.find(e => e._id.toString() === elem._id.toString()));
+
+        //merge both lists
+        data = data.concat(randomUsers);
+
+        return res.status(200).json({
+            success: true,
+            user: data,
+        });
+    } catch (error) {
+        console.log(error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

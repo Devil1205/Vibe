@@ -15,8 +15,13 @@ exports.registerUserValidation = {
         body("password")
             .isLength({ min: 6 }).withMessage("Password must be atleast 6 characters"),
 
-        body("image.public_id").notEmpty().withMessage("Image public id is required"),
-        body("image.public_id").notEmpty().withMessage("Image url is required")
+        body("image.public_id")
+        .if(body("image").notEmpty())
+        .notEmpty().withMessage("Image public id is required"),
+
+        body("image.url")
+        .if(body("image").notEmpty())
+        .notEmpty().withMessage("Image url is required"),
     ],
 
     validate: (req, res, next) => {

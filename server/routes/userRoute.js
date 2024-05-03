@@ -1,4 +1,4 @@
-const { registerUser, loginUser, updateProfile, getProfile, updatePassword, forgotPassword, resetPassword, logoutUser, toggleFollow, getUserDetails } = require('../controllers/userController');
+const { registerUser, loginUser, updateProfile, getProfile, updatePassword, forgotPassword, resetPassword, logoutUser, toggleFollow, getUserDetails, getUserSuggestions } = require('../controllers/userController');
 const { isAuthenticated } = require('../middlewares/auth');
 const { registerUserValidation, loginUserValidation, updateProfileValidation, updatePasswordValidation, forgotPasswordValidation, resetPasswordValidation, toggleFollowValidation } = require('../middlewares/userValidation');
 
@@ -33,5 +33,8 @@ router.post("/follow", isAuthenticated, toggleFollowValidation.errors, toggleFol
 
 //get user details route
 router.get("/user/:id", isAuthenticated, getUserDetails);
+
+//get user suggestions route
+router.get("/follow/suggestions", isAuthenticated, getUserSuggestions);
 
 module.exports = router;

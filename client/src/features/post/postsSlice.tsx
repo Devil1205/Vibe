@@ -2,13 +2,15 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { post } from "../../interfaces/post";
 import axios from "axios";
 
-const initialState: { posts: post | [], loading: boolean, error?: string | null } = { posts: [], loading: false, error: null }
+const initialState: { posts: post[] | [], loading: boolean, error?: string | null } = { posts: [], loading: false, error: null }
 
 export const getAllPosts = createAsyncThunk("posts/allPosts", async (_, { rejectWithValue }) => {
     try {
         const { data } = await axios.get("http://localhost:5000/api/v1/posts/all");
         return data;
     } catch (error) {
+        if (!error.response)
+            throw error;
         const message: string = error.response.data.message;
         if (!message)
             throw error;

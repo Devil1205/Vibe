@@ -7,9 +7,10 @@ import PhoneOutlined from '@mui/icons-material/PhoneOutlined';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUserCircle } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { clearErrors, loginUser, registerUser } from '../../features/user/userSlice';
+import { clearErrors, loginUser, registerUser, clearSuccess } from '../../features/user/userSlice';
 import { toast } from 'react-toastify';
 import Loader from '../layout/Loader/Loader';
+import { fetchUser } from '../../features/user/userDetailsSlice';
 
 function RegisterLogin() {
 
@@ -76,18 +77,8 @@ function RegisterLogin() {
             if (Object.keys(user).length > 0) {
                 navigate("/home");
             }
-            else {
-                if (error) {
-                    toast.error(error);
-                    dispatch(clearErrors());
-                }
-                if (message) {
-                    toast.success(message);
-
-                }
-            }
         }
-    }, [dispatch, error, message])
+    }, [dispatch, error, message, user])
 
     return (
         loading ? <Loader /> :
@@ -117,11 +108,11 @@ function RegisterLogin() {
                         <form className="signupForm" encType='multipart/form-data' ref={registerTab} onSubmit={submitSignupForm}>
                             <div className="signupName">
                                 <AccountCircleOutlinedIcon />
-                                <input type="text" placeholder="Name" value={signupData.name} name="name" onChange={signupDataChange} />
+                                <input type="text" placeholder="Name" value={signupData.name} required name="name" onChange={signupDataChange} />
                             </div>
                             <div className="signupEmail">
                                 <EmailOutlinedIcon />
-                                <input type="email" placeholder="Email" value={signupData.email} name="email" onChange={signupDataChange} />
+                                <input type="email" placeholder="Email" value={signupData.email} required name="email" onChange={signupDataChange} />
                             </div>
                             <div className="signupPhone">
                                 <PhoneOutlined />
@@ -129,7 +120,7 @@ function RegisterLogin() {
                             </div>
                             <div className="loginPassword">
                                 <LockOpenOutlinedIcon />
-                                <input type="password" placeholder="Password" value={signupData.password} name="password" onChange={signupDataChange} />
+                                <input type="password" placeholder="Password" required minLength={6} value={signupData.password} name="password" onChange={signupDataChange} />
                             </div>
                             <div className="registerImage">
                                 {avatarPreview ? <img src={avatarPreview} alt="Avatar Preview" /> : <span><FaUserCircle size="30px" /></span>}

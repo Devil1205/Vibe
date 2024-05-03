@@ -22,5 +22,6 @@ export interface post {
     likes: user[] | [],
     createdAt: Date,
     images: image[] | [],
+    caption?: string,
     comments: comment[] | []
 }

@@ -3,13 +3,15 @@ import postsSlice from "./features/post/postsSlice";
 import userDetailsSlice from "./features/user/userDetailsSlice";
 import userSlice from "./features/user/userSlice";
 import suggestionsSlice from "./features/user/suggestionsSlice";
+import LikeSlice from "./features/post/LikeSlice";
 
 const store = configureStore({
     reducer: {
         posts: postsSlice,
         user: userSlice,
         userDetails: userDetailsSlice,
-        suggestions: suggestionsSlice
+        suggestions: suggestionsSlice,
+        like: LikeSlice
     },
 });
 export type AppDispatch = typeof store.dispatch

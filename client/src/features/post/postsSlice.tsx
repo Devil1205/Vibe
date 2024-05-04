@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { post } from "../../interfaces/post";
+import { post, user } from "../../interfaces/post";
 import axios from "axios";
+import { toggleLike } from "./LikeSlice";
 
 const initialState: { posts: post[] | [], loading: boolean, error?: string | null } = { posts: [], loading: false, error: null }
 
@@ -18,11 +19,13 @@ export const getAllPosts = createAsyncThunk("posts/allPosts", async (_, { reject
     }
 })
 
+
 const PostsSlice = createSlice({
     name: "posts",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
+        //get all posts reducers
         builder.addCase(getAllPosts.pending, (state) => {
             state.loading = true;
         })
@@ -33,6 +36,18 @@ const PostsSlice = createSlice({
         builder.addCase(getAllPosts.rejected, (state, action) => {
             state.loading = false;
             state.error = typeof action.payload === "string" ? action.payload : action.error.message;
+        })
+        builder.addCase(toggleLike.fulfilled, (state, action) => {
+            state.loading = false;
+            state.posts.forEach((post: post) => {
+                if (post._id === action.payload.pid) {
+                    if (post.likes.find(like => like._id === action.payload.user._id))
+                        post.likes = post.likes.filter(like => like._id !== action.payload.user._id);
+                    else {
+                        post.likes.push(action.payload.user);
+                    }
+                }
+            })
         })
     }
 })

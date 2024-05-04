@@ -17,7 +17,7 @@ export interface register {
 export interface userDetails {
     _id: string,
     name: string,
-    image: image,
+    image?: image,
     email: string,
     posts: post[] | [],
     followers: user[] | [],

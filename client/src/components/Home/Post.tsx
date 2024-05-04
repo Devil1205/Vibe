@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaUserCircle } from "react-icons/fa";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Link } from "react-router-dom";
@@ -7,13 +6,16 @@ import { AiOutlineLike } from "react-icons/ai";
 import { BiSolidLike } from "react-icons/bi";
 import { FaRegComment } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { post } from '../../interfaces/post';
+import { post, user } from '../../interfaces/post';
 import { Avatar } from "@mui/material";
-import { useAppSelector } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { toggleLike } from "../../features/post/LikeSlice";
 
 function Post({ post }: { post: post }) {
 
     const { user } = useAppSelector(state => state.userDetails);
+    const { loading } = useAppSelector(state => state.like);
+    const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -34,7 +36,15 @@ function Post({ post }: { post: post }) {
     }
 
     const isLiked = (item: post) => {
-        
+        if ("_id" in user) {
+            let res = item.likes.find(elem => (elem._id === user._id) ? true : false);
+            return res;
+        }
+        return false;
+    }
+
+    const toggleLikeHandle = (pid: string, user: user) => {
+        dispatch(toggleLike({ pid, user }));
     }
 
     return (
@@ -42,7 +52,7 @@ function Post({ post }: { post: post }) {
             <div className="postInfo flex justify-between space-x-6">
                 <div>
                     <Link to="/user" className="flex items-center space-x-2">
-                        <Avatar src={post.owner.image.url} alt={post.owner.name} />
+                        <Avatar src={post.owner.image?.url} alt={post.owner.name} />
                         <div>
                             <h3 className="text-lg font-[500]">{post.owner.name}</h3>
                             <div className="text-gray-700 text-xs font-[500]">
@@ -79,7 +89,7 @@ function Post({ post }: { post: post }) {
                 </div>
             </div>
             <div className="content">
-                {post.images.length > 0 && <img src="https://cdn.pixabay.com/photo/2016/05/05/02/37/sunset-1373171_1280.jpg" alt="" className="w-full h-full rounded" />}
+                {post.images.length > 0 && <img src={post.images[0].url} alt="" className="w-full h-full rounded" />}
                 <p className="caption text-gray-800 text-lg">{post.caption}</p>
                 <div className="contentInfo flex space-x-4 font-bold mt-2">
                     <Link to="/">{post.likes.length} Likes</Link>
@@ -87,9 +97,9 @@ function Post({ post }: { post: post }) {
                 </div>
             </div>
             <div className="actions flex text-2xl space-x-4">
-                <button><AiOutlineLike /></button>
-                {/* <button><BiSolidLike /></button> */}
-                <button><FaRegComment /></button>
+                {Object.keys(user).length === 0 || !isLiked(post) ? <button disabled={Object.keys(user).length === 0 || loading} className="disabled:text-gray-500" onClick={() => { "_id" in user && toggleLikeHandle(post._id, user) }}><AiOutlineLike /></button> :
+                    <button disabled={loading} className="text-purple-700"><BiSolidLike onClick={() => { "_id" in user && toggleLikeHandle(post._id, user) }} /></button>}
+                <button disabled={Object.keys(user).length === 0} className="disabled:text-gray-500"><FaRegComment /></button>
             </div>
         </div >
     )

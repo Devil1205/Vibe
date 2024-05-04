@@ -5,7 +5,7 @@ export interface image {
 
 export interface user {
     _id: string,
-    image: image,
+    image?: image,
     name: string,
 }
 
@@ -19,9 +19,9 @@ export interface comment {
 export interface post {
     _id: string,
     owner: user,
-    likes: user[] | [],
+    likes: user[],
     createdAt: Date,
-    images: image[] | [],
+    images: image[],
     caption?: string,
-    comments: comment[] | []
+    comments: comment[]
 }

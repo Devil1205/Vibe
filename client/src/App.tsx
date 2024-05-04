@@ -7,6 +7,7 @@ import RegisterLogin from './components/User/RegisterLogin';
 import { useAppDispatch } from './hooks';
 import { useEffect } from 'react';
 import { fetchUser } from './features/user/userDetailsSlice';
+import AllFollowSuggestions from './components/Home/AllFollowSuggestions';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/home' element={<Home />} />
         <Route path='/login' element={<RegisterLogin />} />
+        <Route path='/follow/suggestions' element={<AllFollowSuggestions />} />
       </Routes>
       <Footer />
     </Router>

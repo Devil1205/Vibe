@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import './Home.css';
 import Post from './Post.tsx';
 import { useEffect } from 'react';
@@ -6,19 +5,31 @@ import { toast } from 'react-toastify';
 import { getAllPosts } from '../../features/post/postsSlice.tsx';
 import { useAppDispatch, useAppSelector } from '../../hooks.ts';
 import Loader from '../layout/Loader/Loader.tsx';
+import { getFollowSuggestions } from '../../features/user/suggestionsSlice.tsx';
+import { clearErrors } from '../../features/user/userSlice.tsx';
+import FollowSuggestions from './FollowSuggestions.tsx';
 
 
 function Home() {
 
   const dispatch = useAppDispatch();
   const { posts, loading, error } = useAppSelector(state => state.posts);
+  const { followUsers, error: suggestionsError } = useAppSelector(state => state.suggestions);
 
   useEffect(() => {
     if (error) {
       toast.error(error);
+      dispatch(clearErrors());
     }
-    else
+    if (suggestionsError) {
+      toast.error(suggestionsError);
+      dispatch(clearErrors());
+    }
+    else {
       dispatch(getAllPosts());
+      if (!suggestionsError)
+        dispatch(getFollowSuggestions());
+    }
   }, [dispatch, error])
 
   return (
@@ -35,25 +46,7 @@ function Home() {
 
         </div>
         <div className="followBar text-center hidden sm:block">
-          <Link to="/"><h2 className='text-lg font-[500] border-b border-gray-300'>Follow People</h2></Link>
-          <div className='py-4 space-y-4'>
-            <div className='flex flex-col items-center'>
-              <Link to="/">
-                <img src="https://cdn.pixabay.com/photo/2016/05/05/02/37/sunset-1373171_1280.jpg" alt="Person Name" className='w-12 h-12 rounded-full object-cover' />
-              </Link>
-              <Link to="/">
-                <h3 className='text-md font-[500]'>Pulkit Sachdeva</h3>
-              </Link>
-            </div>
-            <div className='flex flex-col items-center'>
-              <Link to="/">
-                <img src="https://cdn.pixabay.com/photo/2016/05/05/02/37/sunset-1373171_1280.jpg" alt="Person Name" className='w-12 h-12 rounded-full object-cover' />
-              </Link>
-              <Link to="/">
-                <h3 className='text-md font-[500]'>Pulkit Sachdeva</h3>
-              </Link>
-            </div>
-          </div>
+          <FollowSuggestions users={followUsers.slice(0, 10)} />
         </div>
       </div >
   )

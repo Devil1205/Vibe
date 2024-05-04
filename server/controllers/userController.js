@@ -320,25 +320,15 @@ exports.getUserSuggestions = async (req, res, next) => {
         const following = req.user.following;
         //get current user's followers list
         const followers = req.user.followers;
-        let users = await User.find();
-        let data = [];
-        //get following of current users followers and following
-        for (let i = 0; i < Math.max(followers.length, following.length); i++) {
-            //it finds the people whose followers list contain current user's following or follower user
-            data = users.filter(elem => elem.followers.includes(followers[i]) || elem.followers.includes(following[i]));
-        }
 
-        //find random users to recommend people in case the above list in less than n
-        let randomUsers = await User.aggregate([{ $sample: { size: n - data.length } }, { $project: { "password": 0 } }]);
-        //remove own account and duplicate accounts already present in data
-        randomUsers = randomUsers.filter(elem => elem._id.toString() !== req.user._id.toString() && !data.find(e => e._id.toString() === elem._id.toString()));
-
-        //merge both lists
-        data = data.concat(randomUsers);
+        //get users whose followers are in current user's following or followers list excluding already followed
+        const data = await User.find({ followers: { $in: following.concat(followers), $nin: [req.user._id] } }).select("name image");
+        //get remaining random users from db to fulfil the number of suggestions keeping already followed & own account excluded
+        const randomUsers = await User.aggregate([{ $match: { "_id": { "$nin": data.map(elem => elem._id).concat(req.user._id) }, "followers": { "$in": [req.user._id] } } }, { $sample: { size: n - data.length } }, { $project: { "name": 1, "image": 1 } }]);;
 
         return res.status(200).json({
             success: true,
-            user: data,
+            user: data.concat(randomUsers),
         });
     } catch (error) {
         console.log(error);

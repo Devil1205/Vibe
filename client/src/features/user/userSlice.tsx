@@ -108,7 +108,6 @@ const UserSlice = createSlice({
             state.message = action.payload.message;
         })
         builder.addCase(logoutUser.rejected, (state, action) => {
-            console.log("logout");
             state.loading = false;
             state.error = typeof action.payload === "string" ? action.payload : action.error.message;
         })
